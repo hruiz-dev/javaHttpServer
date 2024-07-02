@@ -6,11 +6,9 @@ public class FileLoader {
 
     public static File getRecurse(ClientData data) {
         System.out.println(data.getUrl());
-        String path = (data.getUrl() != null) ?
-                data.getUrl().substring(0, data.getUrl().indexOf("/")) :
-                FILEPATH + "/index.html";
+        String path = data.getUrl();
 
-        if (path == "") {
+        if (path.equals("/")) {
             path = FILEPATH + "/index.html";
         }
         File file =  new File(path);
