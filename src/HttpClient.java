@@ -2,19 +2,21 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class HttpClient implements HttpHandler {
+
     @Override
+    /**
+     * Funzio honek zerbitzariak hhtp eskaera bat jasotzen duenean exekutatzen da
+     * @param t HttpExchange klaseko objektua prametro gisa jasotzen du, honek eskaera burutu duen klientearen datuak gortzen ditu
+     */
     public void handle(HttpExchange t) throws IOException {
         ClientData client = new ClientData();
         Headers headers = t.getRequestHeaders();
-        for (String header : headers.keySet()) {
-            System.out.println(header + ": " + headers.getFirst(header));
-        }
+
 
         client.setUrl(t.getRequestURI().toString());
 
@@ -41,10 +43,15 @@ public class HttpClient implements HttpHandler {
             }
         }
 
-        String response = "This is the response";
-        t.sendResponseHeaders(200, response.length());
-        OutputStream os = t.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
+        File file = FileLoader.getRecurse(client);
+
+        if (file.getName().endsWith("404.html")) {
+            ResponseBuilder.send404Response(t, file);
+        } else {
+            ResponseBuilder.send200Response(t, file);
+        }
+
+
+            t.close();
     }
 }
